@@ -220,6 +220,7 @@ bost_2014_arrests <- homicide_data %>%
 
 ```
 # in St. Louis the homicide arrest rate has dropped 9 percentage points 2014 - 2017
+# By Victoria 
 
 ```{r}
 
