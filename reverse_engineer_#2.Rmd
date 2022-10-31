@@ -1,0 +1,263 @@
+---
+title: "reverse_engineer_#2"
+author: "Victoria Stavish and Parker Leipzig"
+date: "2022-10-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# project overview 
+
+# Turn in, via GitHub, a draft of the data notebook you will produce for this project. You should work on this notebook together, but everyone needs to upload a copy to their own GitHub repo and turn in a link for grading. At a minimum, your data notebook should load the data you'll use with this project and have answered at least one of the findings you are to reproduce. The more you have finished, the more feedback I'll be able to give you before you turn in your final notebook.
+
+# add project description, data dictionary here
+
+
+
+```{r}
+
+```
+
+# load libraries
+
+```{r}
+
+library(tidyverse)
+library(janitor)
+library(sf)
+
+```
+
+# load data (also use census data? ask)
+
+```{r}
+
+homicide_data <- read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv")
+
+
+```
+
+# almost a killing each day for the past three years in Baltimore
+# By Victoria 
+
+```{r}
+
+baltimore_daily <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2015|2016|2017", reported_date)) 
+
+# There are 1,095 days between 01/01/2015 and 12/31/2017. There were 1,002 reported homicides in Baltimore, MD during that same time period, proving that there was almost a killing each day for the past three years (imagining that we are writing this in 2018) in Baltimore, MD
+
+```
+
+# Baltimore is a city of 600,000
+# By Victoria 
+# Do we need this?
+
+```{r}
+
+
+```
+
+# City police made an arrest in 41 percent of homicides in 2014 in Baltimore
+# By Victoria 
+
+```{r}
+
+bmore_2014_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2014", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+# City police made an arrest in 40.76 percent of homicides in 2014 in Baltimore
+
+```
+
+# last year (2017), the arrest rate was just 27 percent, a 14 percentage point drop in Baltimore
+# By Victoria 
+
+```{r}
+
+bmore_2017_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2017", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+# City police made an arrest in 27.35 percent of homicides in 2017 in Baltimore
+
+```
+
+# Of 50 of the nation’s largest cities, Baltimore is one of 34 where police now (2017) make homicide arrests less often than in 2014
+# By Victoria
+
+```{r}
+
+bmore_2017_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2017", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+bmore_2014_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2014", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+
+# 27% of homicides resulted in arrests in 2017 while 41% of homicides resulted in arrests in 2014
+
+```
+
+# In Chicago, the homicide arrest rate has dropped 21 percentage points (2014 compared to 2017)
+# By Victoria 
+
+```{r}
+
+chi_2014_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="Chicago") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2014", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+chi_2017_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="Chicago") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2017", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+# in 2014, Chicago's homicide arrest rate was 29.90 percent. In 2017, Chicago's homicide arrest rate was 8.56 percent.
+
+# 29.90 - 8.56 = 21.34 percentage point drop in homicide arrest rates
+
+```
+
+# In Boston the homicide arrest rate has dropped 12 points 2014 - 2017
+# BY Victoria 
+
+```{r}
+
+bost_2017_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="Boston") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2017", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + open_no_arrest)))
+
+bost_2014_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="Boston") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2014", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + open_no_arrest)))
+
+# In 2014 Boston's homicide arrest rate was 52.72 percent. In 2017 Boston's homicide arrest rate was 40.74 percent.
+
+# 52.72 - 40.74 = 11.98 percentage point drop in Boston's homicide arrest rates
+
+```
+# in St. Louis the homicide arrest rate has dropped 9 percentage points 2014 - 2017
+
+```{r}
+
+louis_2014_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city == "St. Louis") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2014", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+louis_2017_arrests <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  filter(city =="St. Louis") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2017", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+# in 2014, St. Louis' homicide arrest rate was 40.63 percent. In 2017, St. Louis' homicide arrest rate was 31.68 percent.
+
+# 40.63 - 31.68 = 8.95 percentage point drop in homicide arrest rates
+
+```
+
+
+
+
+
+
+
