@@ -255,9 +255,61 @@ louis_2017_arrests <- homicide_data %>%
 
 ```
 
+#For most of the decade before 2015, Baltimore’s annual homicide arrest rate hovered at about 40 percent
+#By Parker
+```{r}
+before_2015 <- homicide_data %>% 
+  clean_names() %>% 
+  as.data.frame() %>% 
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2010|2011|2012|2013|2014", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(arrest_rate = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)*100))
 
+#The arrest rate for the first half of the decade before 2015 hovered around 40.37 percent.
 
+```
 
+#Since 2015, the arrest rate hasn’t topped 30 percent in any year in Baltimore
+#By Parker
+```{r}
+after_2015 <- homicide_data %>% 
+  clean_names() %>% 
+  as.data.frame() %>% 
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2015|2016|2017|2018", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(arrest_rate = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)*100))
+#Yes, the arrest rate had only stayed around 25.15 percent.
 
+```
+
+#Of the 1,002 homicides between 2015 and the beginning of this year, just 252 — one out of every four — resulted in an arrest in Baltimore
+#By Parker
+#also is same code as above, so this dataframe might be unnecessary.
+```{r}
+balt_2015_2018 <- homicide_data %>% 
+  clean_names() %>% 
+  as.data.frame() %>% 
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2015|2016|2017|2018", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(arrest_rate = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)*100))
+```
 
 
