@@ -13,13 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Turn in, via GitHub, a draft of the data notebook you will produce for this project. You should work on this notebook together, but everyone needs to upload a copy to their own GitHub repo and turn in a link for grading. At a minimum, your data notebook should load the data you'll use with this project and have answered at least one of the findings you are to reproduce. The more you have finished, the more feedback I'll be able to give you before you turn in your final notebook.
 
-# add project description, data dictionary here
-
-
-
-```{r}
-
-```
+# Our project looks at homicide arrests in 50 of this nation's largest cities across the past decade.
 
 # load libraries
 
@@ -31,7 +25,7 @@ library(sf)
 
 ```
 
-# load data (also use census data? ask)
+# load data
 
 ```{r}
 
@@ -59,7 +53,6 @@ baltimore_daily <- homicide_data %>%
 
 # Baltimore is a city of 600,000
 # By Victoria 
-# Do we need this?
 
 ```{r}
 
@@ -279,25 +272,51 @@ before_2015 <- homicide_data %>%
 #Since 2015, the arrest rate hasn’t topped 30 percent in any year in Baltimore
 #By Parker
 ```{r}
-after_2015 <- homicide_data %>% 
+rate_2015 <- homicide_data %>% 
   clean_names() %>% 
   as.data.frame() %>% 
   filter(city =="Baltimore") %>%
   select(uid, reported_date, city, state, disposition) %>%
   mutate(reported_date = as.numeric(reported_date)) %>%
-  filter(grepl("2015|2016|2017|2018", reported_date)) %>%
+  filter(grepl("2015", reported_date)) %>%
   group_by(disposition) %>%
   count() %>%
   pivot_wider(names_from=disposition, values_from=n) %>%
   clean_names() %>%
   mutate(arrest_rate = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)*100))
-#Yes, the arrest rate had only stayed around 25.15 percent.
+
+rate_2016 <- homicide_data %>% 
+  clean_names() %>% 
+  as.data.frame() %>% 
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2016", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(arrest_rate = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)*100))
+
+rate_2017 <- homicide_data %>% 
+  clean_names() %>% 
+  as.data.frame() %>% 
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2017", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(arrest_rate = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)*100))
+
+#Yes, all of these rates are below 30 percent.
 
 ```
 
 #Of the 1,002 homicides between 2015 and the beginning of this year, just 252 — one out of every four — resulted in an arrest in Baltimore
 #By Parker
-#also is same code as above, so this dataframe might be unnecessary.
 ```{r}
 balt_2015_2018 <- homicide_data %>% 
   clean_names() %>% 
@@ -305,7 +324,7 @@ balt_2015_2018 <- homicide_data %>%
   filter(city =="Baltimore") %>%
   select(uid, reported_date, city, state, disposition) %>%
   mutate(reported_date = as.numeric(reported_date)) %>%
-  filter(grepl("2015|2016|2017|2018", reported_date)) %>%
+  filter(grepl("2015|2016|2017", reported_date)) %>%
   group_by(disposition) %>%
   count() %>%
   pivot_wider(names_from=disposition, values_from=n) %>%
@@ -313,4 +332,35 @@ balt_2015_2018 <- homicide_data %>%
   mutate(arrest_rate = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)*100))
 ```
 
+#And while most cities saw their arrest rates drop gradually, Baltimore’s decline was sudden — plummeting 15 percentage points in 2015
+#By Parker
+```{r}
+balt_diff_2015 <- homicide_data %>% 
+  clean_names() %>% 
+  as.data.frame() %>% 
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2014|2015", reported_date)) %>%
+  group_by(disposition) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(arrest_rate = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)*100))
+
+#note for victoria. i am trying to calculate the difference from 2015 to 2014, but i can't figure out how to do it properly because of the weird way the data data is formatted.
+```
+#Major police departments that have success in making arrests generally assign detectives fewer than five cases a year
+#By Parker
+```{r}
+num_cases <- homicide_data %>% 
+  clean_names() %>% 
+  as.data.frame() %>% 
+  filter(city =="Baltimore") %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = as.numeric(reported_date)) %>%
+  filter(grepl("2010|2011|2012|2013|2014|2015|2016|2017", reported_date)) %>%
+  count(reported_date)
+#note for victoria. i am trying to calculate the counts per year, but again i can't figure out how to do it properly because of the weird way the date data is formatted.
+```
 
