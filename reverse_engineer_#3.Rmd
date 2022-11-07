@@ -1,7 +1,7 @@
 ---
-title: "reverse_engineer_#2"
+title: "reverse_engineer_#3"
 author: "Victoria Stavish and Parker Leipzig"
-date: "2022-10-28"
+date: "2022-11-06"
 output: html_document
 ---
 
@@ -13,8 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Our project looks at homicide arrests in 50 of this nation's largest cities across the past decade. We used this data to replicate findings from a Washington Post investigation into arrest rates of homicicde cases in the largest U.S. cities. In order to achieve this, we first analyzed the Washington Post investigation and identified the most significant data findings within the story. Once we identified the most significant data findings, we created this notebook to recreate those significant findings. Here are some of the most significant findings we replicated:
 1. There was a killing nearly every day between 2015-2017 in Baltimore
-2. Baltimore's homicide arrest rate dropped 14 percentage points between 2015 and 2017
-3. 
+2. About one in every four homicides in Baltimore resulted in arrests 2015 - 2017
+3. Baltimore's homicide arrest rate dropped 14 percentage points between 2015 and 2017
 
 ## data dictionary 
 
@@ -60,6 +60,8 @@ homicide_data <- read_csv("https://raw.githubusercontent.com/washingtonpost/data
 # By Victoria 
 
 ```{r}
+# find the amount of killings in 3 years 
+
 baltimore_daily <- homicide_data %>%
   clean_names() %>%
   as.data.frame() %>%
@@ -80,6 +82,7 @@ baltimore_daily <- homicide_data %>%
 # By Victoria 
 
 ```{r}
+# what percent of Baltimore homicides resulted in arrests in 2014
 
 bmore_2014_arrests <- homicide_data %>%
   clean_names() %>%
@@ -107,6 +110,8 @@ bmore_2014_arrests <- homicide_data %>%
 
 ```{r}
 
+# what percent of Baltimore homicides resulted in arrests in 2017
+
 bmore_2017_arrests <- homicide_data %>%
   clean_names() %>%
   as.data.frame() %>%
@@ -127,11 +132,53 @@ bmore_2017_arrests <- homicide_data %>%
 
 # Of 50 of the nation’s largest cities, Baltimore is one of 34 where police now (2017) make homicide arrests less often than in 2014
 
-# 27% of homicides resulted in arrests in 2017 while 41% of homicides resulted in arrests in 2014
+# 27% of Baltimore homicides resulted in arrests in 2017 while 41% of Baltimore homicides resulted in arrests in 2014
 
-# By Victoria THIS NEEDS MORE WORK
+# By Victoria
 
 ```{r}
+
+# finding the 34 cities where police make less arrests in 2017 than in 2014
+
+top_34_17 <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = lubridate::ymd(reported_date)) %>%
+  mutate(year = lubridate::year(reported_date)) %>%
+  filter(grepl("2017", year)) %>%
+  group_by(disposition, city, year) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved17 = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest))) %>%
+  drop_na() %>%
+  arrange(desc(pct_unsolved17)) %>%
+  head(top_34_17,n=34)
+
+
+top_34_14 <- homicide_data %>%
+  clean_names() %>%
+  as.data.frame() %>%
+  select(uid, reported_date, city, state, disposition) %>%
+  mutate(reported_date = lubridate::ymd(reported_date)) %>%
+  mutate(year = lubridate::year(reported_date)) %>%
+  filter(grepl("2014", year)) %>%
+  group_by(disposition, city, year) %>%
+  count() %>%
+  pivot_wider(names_from=disposition, values_from=n) %>%
+  clean_names() %>%
+  mutate(pct_unsolved14 = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest))) %>%
+  drop_na() %>%
+  arrange(desc(pct_unsolved14)) %>%
+  head(top_34_14,n=34)
+
+# joing the 2017 and 2014 dataframes and finding pct change
+
+full_top_34 = merge(x=top_34_17,y=top_34_14,by="city",all=TRUE) %>%
+  mutate(pct_diff = pct_unsolved17 - pct_unsolved14)
+
+# baltimore arrest rate in 2017
 
 bmore_2017_arrests <- homicide_data %>%
   clean_names() %>%
@@ -146,6 +193,8 @@ bmore_2017_arrests <- homicide_data %>%
   pivot_wider(names_from=disposition, values_from=n) %>%
   clean_names() %>%
   mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+# baltimore arrest rate in 2014
 
 bmore_2014_arrests <- homicide_data %>%
   clean_names() %>%
@@ -175,6 +224,8 @@ bmore_2014_arrests <- homicide_data %>%
 
 ```{r}
 
+# What was the homicide arrest rate in Chicago in 2014
+
 chi_2014_arrests <- homicide_data %>%
   clean_names() %>%
   as.data.frame() %>%
@@ -188,6 +239,8 @@ chi_2014_arrests <- homicide_data %>%
   pivot_wider(names_from=disposition, values_from=n) %>%
   clean_names() %>%
   mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+# What was the homicide arrest rate in Chicago in 2017
 
 chi_2017_arrests <- homicide_data %>%
   clean_names() %>%
@@ -217,6 +270,8 @@ chi_2017_arrests <- homicide_data %>%
 
 ```{r}
 
+# What was the homicide arrest rate in Boston in 2017
+
 bost_2017_arrests <- homicide_data %>%
   clean_names() %>%
   as.data.frame() %>%
@@ -230,6 +285,8 @@ bost_2017_arrests <- homicide_data %>%
   pivot_wider(names_from=disposition, values_from=n) %>%
   clean_names() %>%
   mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + open_no_arrest)))
+
+# What was the homicide arrest rate in Boston in 2014
 
 bost_2014_arrests <- homicide_data %>%
   clean_names() %>%
@@ -259,6 +316,8 @@ bost_2014_arrests <- homicide_data %>%
 
 ```{r}
 
+# What was the homicide arrest rate in St. Louis in 2014
+
 louis_2014_arrests <- homicide_data %>%
   clean_names() %>%
   as.data.frame() %>%
@@ -272,6 +331,8 @@ louis_2014_arrests <- homicide_data %>%
   pivot_wider(names_from=disposition, values_from=n) %>%
   clean_names() %>%
   mutate(pct_unsolved = (closed_by_arrest / (closed_by_arrest + closed_without_arrest + open_no_arrest)))
+
+# What was the homicide arrest rate in St. Louis in 2017
 
 louis_2017_arrests <- homicide_data %>%
   clean_names() %>%
@@ -297,6 +358,9 @@ louis_2017_arrests <- homicide_data %>%
 
 # By Parker
 ```{r}
+
+# What was the homicide arrest rate in Baltimore 2010-2014
+
 before_2015 <- homicide_data %>% 
   clean_names() %>% 
   as.data.frame() %>% 
@@ -305,7 +369,7 @@ before_2015 <- homicide_data %>%
   mutate(reported_date = lubridate::ymd(reported_date)) %>%
   mutate(year = lubridate::year(reported_date)) %>%
   filter(grepl("2010|2012|2013|2014", year)) %>%
-  group_by(disposition) %>%
+  group_by(disposition, year) %>%
   count() %>%
   pivot_wider(names_from=disposition, values_from=n) %>%
   clean_names() %>%
@@ -321,6 +385,9 @@ before_2015 <- homicide_data %>%
 
 # By Parker
 ```{r}
+
+# What was the homicide arrest rate in Baltimore in 2015-2017
+
 rate_2015 <- homicide_data %>% 
   clean_names() %>% 
   as.data.frame() %>% 
@@ -373,6 +440,9 @@ rate_2017 <- homicide_data %>%
 
 # By Parker
 ```{r}
+
+# How many homicides in Baltimore resulted in arrests between 2015-2017
+
 balt_2015_2018 <- homicide_data %>% 
   clean_names() %>% 
   as.data.frame() %>% 
@@ -390,12 +460,15 @@ balt_2015_2018 <- homicide_data %>%
 
 # Finding 10
 
-# And while most cities saw their arrest rates drop gradually, Baltimore’s decline was sudden — plummeting 15 percentage points in 2015
+# Baltimore’s decline (in homicide arrest rates) was sudden — plummeting 15 percentage points in 2015
 
 # Between 2014 and 2015, Baltimore's arrest rate dropped from 40.76 percent to 25.44 percent.
 
-# By Parker NEEDS MORE WORK
+# By Parker
 ```{r}
+
+# What was the homicide arrest rate in Baltimore in 2014 vs 2015
+
 balt_diff_2015 <- homicide_data %>% 
   clean_names() %>% 
   as.data.frame() %>% 
