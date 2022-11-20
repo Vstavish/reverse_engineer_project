@@ -1,6 +1,6 @@
 ---
-title: "data_project"
-author: "Victoria Stavish and Parker Liepzig"
+title: "data_project: public transportation"
+author: "Victoria Stavish and Parker Leipzig"
 date: "2022-11-20"
 output: html_document
 ---
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Project Summary 
 
-We want to understand public transportation use across different Baltimore neighborhoods and why public transportation use fluctuates among these neighborhoods. To do this, we are using open source datasets from Baltimore Neighborhood Indicator Alliance that are updated as of 2020. 
+We want to understand public transportation use across different Baltimore neighborhoods and why public transportation use fluctuates among these neighborhoods. To do this, we are using open source data sets from Baltimore Neighborhood Indicator Alliance that are updated as of 2020. 
 
 # The specific datasets we are using are (add in data dictionaries for each):
 
@@ -27,6 +27,7 @@ We want to understand public transportation use across different Baltimore neigh
 # Using these datasets, we aim to answer these five questions:
 
 1. Which 5 neighborhoods have the highest and lowest percentage of public transportation use? 
+
 2. What are the income demographics of the neighborhoods with the highest and lowest transportation use?
 
 3. What are the race demographics of the neighborhoods with the highest and lowest transportation use?
@@ -43,6 +44,9 @@ library(tidyverse)
 library(janitor)
 library(lubridate)
 library(readxl)
+library(ggthemes)
+library(sf)
+library(leaflet)
 
 ```
 
@@ -149,7 +153,7 @@ max_transit_race <- max_transit_income %>%
   inner_join(pop_hisp, by="community")
 
 
-# inner join race dataframes with the miimum public transport use and income dataframe
+# inner join race dataframes with the minimum public transport use and income dataframe
 
 min_transit_race <- min_transit_income %>%
   clean_names() %>%
@@ -166,14 +170,22 @@ min_transit_race
 ```
 
 # Do the neighborhoods that have the highest rates of people driving alone to work also have the lowest rates of people who use public transportation to get to work?
-
+#By Parker
 ```{r}
+low_public_high_drive <- min_public_transportation %>% 
+  clean_names() %>% 
+  inner_join(no_car, by="community") %>%
+  arrange(desc(x2020_data))
+
 
 ```
 
 # Do the neighborhoods that have lowest rates of people driving alone to work also have the highest rates of people who use public transportation to get to work?
 
 ```{r}
-
+high_public_low_drive <- max_public_transportation %>% 
+  clean_names() %>% 
+  inner_join(drive_to_work, by="community") %>% 
+  arrange(desc(x2020_data))
 ```
 
