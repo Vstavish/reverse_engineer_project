@@ -1,6 +1,6 @@
 ---
 title: "data_project"
-author: "Victoria Stavish"
+author: "Victoria Stavish and Parker Liepzig"
 date: "2022-11-20"
 output: html_document
 ---
@@ -9,22 +9,171 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# Project Summary 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+We want to understand public transportation use across different Baltimore neighborhoods and why public transportation use fluctuates among these neighborhoods. To do this, we are using open source datasets from Baltimore Neighborhood Indicator Alliance that are updated as of 2020. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# The specific datasets we are using are (add in data dictionaries for each):
 
-```{r cars}
-summary(cars)
+* Median household Income
+* Percent of Population that Uses Public Transportation to Get to Work
+* Percent of Population that Drove Alone to Work
+* Percent of Households with No Vehicles Available
+* Percent of Residents - White/Caucasian (Non-Hispanic)
+* Percent of Residents - Black/African American (Non-Hispanic)
+* Percent of Residents - Hispanic
+* Percent of Residents - Asian (Non-Hispanic)
+
+# Using these datasets, we aim to answer these five questions:
+
+1. Which 5 neighborhoods have the highest and lowest percentage of public transportation use? 
+2. What are the income demographics of the neighborhoods with the highest and lowest transportation use?
+
+3. What are the race demographics of the neighborhoods with the highest and lowest transportation use?
+
+4. Do the neighborhoods that have the highest rates of people driving alone to work also have the lowest rates of people who use public transportation to get to work?
+
+5. Do the neighborhoods that have lowest rates of people driving alone to work also have the highest rates of people who use public transportation to get to work?
+
+# load libraries
+
+```{r}
+
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(readxl)
+
 ```
 
-## Including Plots
+# Load data
 
-You can also embed plots, for example:
+```{r}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+public_transportation <- read_excel("public_transportation/public_transportation.xlsx")
+
+drive_to_work <- read_excel("public_transportation/drive_to_work.xlsx")
+
+no_car <- read_excel("public_transportation/no_car_access.xlsx")
+
+median_income <- read_excel("public_transportation/median_income.xlsx")
+
+pop_white <- read_excel("public_transportation/population_white.xlsx")
+
+pop_black <- read_excel("population_black/population_black.xlsx")
+
+pop_hisp <- read_excel("population_black/population_hispanic.xlsx")
+
+pop_asian <- read_excel("population_black/population_asian.xlsx")
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Which 5 neighborhoods have the highest and lowest percentage of public transportation use? 
+
+# By Victoria
+
+```{r}
+# 5 Baltimore neighborhoods that use public transportation the most to get to work 
+
+max_public_transportation <- public_transportation %>%
+  as.data.frame() %>%
+  clean_names() %>%
+  arrange(desc(x2020_data)) %>%
+  slice_max(x2020_data, n=5)
+
+# 5 Baltimore neighborhoods that use public transportation the least to get to work 
+
+min_public_transportation <- public_transportation %>%
+  as.data.frame() %>%
+  clean_names() %>%
+  slice_min(x2020_data, n=5)
+
+# Output dataframes
+
+max_public_transportation
+min_public_transportation
+
+```
+
+# What are the income demographics of the neighborhoods with the highest and lowest transportation use?
+
+# By Victoria 
+
+```{r}
+# inner join neighborhoods that use public transportation the most with income data
+ 
+max_transit_income <- max_public_transportation %>%
+  clean_names() %>%
+  inner_join(median_income, by="community")
+
+# inner join neighborhoods that use public transportation the least with income data
+
+min_transit_income <- min_public_transportation %>%
+  clean_names() %>%
+  inner_join(median_income, by="community")
+
+# output dataframes
+
+max_transit_income
+min_transit_income
+
+```
+
+# What are the race demographics of the neighborhoods with the highest and lowest transportation use?
+
+# By Victoria (need to rename columns for clarity)
+
+```{r}
+
+# clean the names of all race dataframes so they join easily
+
+pop_asian <- pop_asian %>%
+  clean_names() 
+ 
+pop_white <- pop_white %>%
+  clean_names()
+
+pop_black <- pop_black %>%
+  clean_names() 
+
+pop_hisp <- pop_hisp %>%
+  clean_names() 
+  
+# inner join race dataframes with the top public transport use and income dataframe
+
+max_transit_race <- max_transit_income %>%
+  clean_names() %>%
+  inner_join(pop_asian, by="community") %>%
+  inner_join(pop_black, by="community") %>%
+  inner_join(pop_white, by="community") %>%
+  inner_join(pop_hisp, by="community")
+
+
+# inner join race dataframes with the miimum public transport use and income dataframe
+
+min_transit_race <- min_transit_income %>%
+  clean_names() %>%
+  inner_join(pop_asian, by="community") %>%
+  inner_join(pop_black, by="community") %>%
+  inner_join(pop_white, by="community") %>%
+  inner_join(pop_hisp, by="community")
+
+# Output dataframes 
+
+max_transit_race
+min_transit_race
+
+```
+
+# Do the neighborhoods that have the highest rates of people driving alone to work also have the lowest rates of people who use public transportation to get to work?
+
+```{r}
+
+```
+
+# Do the neighborhoods that have lowest rates of people driving alone to work also have the highest rates of people who use public transportation to get to work?
+
+```{r}
+
+```
+
