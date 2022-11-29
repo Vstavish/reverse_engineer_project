@@ -196,8 +196,6 @@ min_transit_race
 # Do the neighborhoods that have the highest rates of people driving alone to work also have the lowest rates of people who use public transportation to get to work?
 #By Parker
 
-#Wells comment: I don't understand what the column "no car" is supposed to measure. Canton is 79.3% no car? It seems like you should use the column names from the chunk at Line 222 which made more sense: "drives_to_work"
-
 ```{r}
 drive_to_work <- drive_to_work %>%
   clean_names()
