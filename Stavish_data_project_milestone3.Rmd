@@ -250,8 +250,18 @@ geo_public_transportation <- baltimore_shape %>%
 #ggplot() +
   #geom_sf(data=geo_public_transportation, aes(fill=public_transportation_pct))
 
-leaflet() %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
-  addPolygons(data=baltimore_shape, weight=1, fill="purple") %>%
-  addCircles(data=geo_public_transportation,
-             label=geo_public_transportation$community)
+pal <- colorQuantile("YlGn", NULL, n = 5)
+
+state_popup <- paste0("<strong>Neighborhood: </strong>", 
+                      geo_public_transportation$community, 
+                      "<br><strong>Percent that Uses Public Transportation </strong>", 
+                      geo_public_transportation$public_transportation_pct)
+
+leaflet(data = geo_public_transportation) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal, 
+              fillOpacity = 0.8, 
+              color = "#BDBDC3", 
+              weight = 1, 
+              popup = state_popup)   
+```
