@@ -41,6 +41,7 @@ We want to understand public transportation use across different Baltimore neigh
 ```{r}
 
 library(tidyverse)
+library(dplyr)
 library(janitor)
 library(lubridate)
 library(readxl)
@@ -72,7 +73,18 @@ pop_asian <- read_excel("population_black/population_asian.xlsx")
 
 ```
 
-# Which 5 neighborhoods have the highest and lowest percentage of public transportation use? 
+# Which 5 neighborhoods have the highest and lowest percentage of public transportation use and what are the income demographics of these neighborhoods?
+
+# Summary 
+
+#The five Baltimore neighborhoods that have the highest percentage of residents using public transportation are, in order from greatest percentage to lowest percentage, are Sandtown-Winchester/Harlem Park, Southwest Baltimore, Greater Rosemont, Poppleton/The Terraces/Hollins Market and Clifton-Berea. Even though these five neighborhoods have the highest percentage of public transportation use, the highest percentage is in Sandtown-Winchester/Harlem Park at only 38.5%.
+
+#The five Baltimore neighborhoods that have the lowest percentage of residents using public transportation are, in order from lowest percentage to greatest percentage, are Canton, South Baltimore, Greater Roland Park/Poplar Hill, Fells Point and Cross-Country/Cheswolde. The lowest percentage of people using public transportation is in Canton with just 3.8%.
+
+# Data dictionary
+* community: Neighborhoods in Baltimore City (chr)
+* public_transport: Percent of people in the neighborhood who regularly use public transportation to get to work (dbl)
+* median_income: the median income of each neighborhood (chr)
 
 # By Victoria
 
@@ -80,51 +92,37 @@ pop_asian <- read_excel("population_black/population_asian.xlsx")
 # 5 Baltimore neighborhoods that use public transportation the most to get to work 
 
 max_public_transportation <- public_transportation %>%
-  as.data.frame() %>%
   clean_names() %>%
-  arrange(desc(x2020_data)) %>%
-  slice_max(x2020_data, n=5)
+  rename(public_transport = x2020_data) %>%
+  slice_max(public_transport, n=5)
 
 # 5 Baltimore neighborhoods that use public transportation the least to get to work 
 
 min_public_transportation <- public_transportation %>%
-  as.data.frame() %>%
   clean_names() %>%
-  slice_min(x2020_data, n=5)
+  rename(public_transport = x2020_data) %>%
+  slice_min(public_transport, n=5)
 
 # Output dataframes
 
 max_public_transportation
 min_public_transportation
 
-```
-
-#wells comment: write a sentence summarizing the key findings of these tables and why that is significant. i.e. Sandtown-Winchester/Harlem Park has the highest use of public transportation has this West Baltimore neighborhood historically has been among the poorest in the city. Canton has a lot of boats and Range Rovers. Enough said.
-
-
-# What are the income demographics of the neighborhoods with the highest and lowest transportation use?
-
-# By Victoria 
-
-#Wells comment: This table below is good but it sort of renders the previous chunk at Line 82 obsolete. I would delete it and combine the questions here.
-```{r}
 # inner join neighborhoods that use public transportation the most with income data
 median_income <- median_income %>%
   clean_names()
 
 max_transit_income <- max_public_transportation %>%
   clean_names() %>%
-  inner_join(median_income, by="community")
-names(max_transit_income)[names(max_transit_income) == "x2020_data.x"] <- "high_public_transport"
-names(max_transit_income)[names(max_transit_income) == "x2020_data.y"] <- "2020_income"
+  inner_join(median_income, by="community") %>%
+  rename(median_income = x2020_data)
 
 # inner join neighborhoods that use public transportation the least with income data
 
 min_transit_income <- min_public_transportation %>%
   clean_names() %>%
-  inner_join(median_income, by="community")
-names(min_transit_income)[names(min_transit_income) == "x2020_data.x"] <- "low_public_transport"
-names(min_transit_income)[names(min_transit_income) == "x2020_data.y"] <- "2020_income"
+  inner_join(median_income, by="community") %>%
+  rename(median_income = x2020_data)
 
 # output dataframes
 
@@ -133,13 +131,25 @@ min_transit_income
 
 ```
 
-
-
 # What are the race demographics of the neighborhoods with the highest and lowest transportation use?
 
-# By Victoria (need to rename columns for clarity)
+# Summary 
 
-#Wells comment: This table is great but provide some analysis here about what we are looking at. Also, there are two "low_public_transport" columns so figure out which one to keep
+#Neighborhoods that have the highest percentage of public transportation use are majority Black while the neighborhoods that have the lowest percentage of public transportation use are majority White. Additionally, the median incomes of the majority Black and high public transportation use incomes are significantly lower than the median incomes of the majority White and low public transportation use neighborhoods.
+
+#Most of the low public transportation use White neighborhoods make near or over a median of $100,000 while none of the high public transportation and majority Black community make more than a median of $40,000
+
+# Data dictionary
+* community: Neighborhoods in Baltimore City (chr)
+* public_transport: Percent of people in the neighborhood who regularly use public transportation to get to work (dbl)
+* median_income: the median income of each neighborhood (chr)
+* asian_pop: the percent of the population that is Asian in a given neighborhood (dbl)
+* black_pop: the percent of the population that is Black in a given neighborhood (dbl)
+* white_pop: the percent of the population that is White in a given neighborhood (dbl)
+* hisp_pop: the percent of the population that is Hispanic in a given neighborhood (dbl)
+
+
+# By Victoria
 
 ```{r}
 
@@ -165,7 +175,6 @@ max_transit_race <- max_transit_income %>%
   inner_join(pop_black, by="community") %>%
   inner_join(pop_white, by="community") %>%
   inner_join(pop_hisp, by="community")
-names(max_transit_race)[names(max_transit_race) == "x2020_data.x"] <- "high_public_transport"
 names(max_transit_race)[names(max_transit_race) == "x2020_data.x"] <- "asian_pop"
 names(max_transit_race)[names(max_transit_race) == "x2020_data.y"] <- "black_pop"
 names(max_transit_race)[names(max_transit_race) == "x2020_data.x.x"] <- "white_pop"
@@ -180,7 +189,6 @@ min_transit_race <- min_transit_income %>%
   inner_join(pop_black, by="community") %>%
   inner_join(pop_white, by="community") %>%
   inner_join(pop_hisp, by="community")
-names(min_transit_race)[names(min_transit_race) == "x2020_data.x"] <- "low_public_transport"
 names(min_transit_race)[names(min_transit_race) == "x2020_data.x"] <- "asian_pop"
 names(min_transit_race)[names(min_transit_race) == "x2020_data.y"] <- "black_pop"
 names(min_transit_race)[names(min_transit_race) == "x2020_data.x.x"] <- "white_pop"
@@ -193,7 +201,18 @@ min_transit_race
 
 ```
 
-# Do the neighborhoods that have the highest rates of people driving alone to work also have the lowest rates of people who use public transportation to get to work?
+# Do the neighborhoods that have the highest rates of car ownership also have the lowest rates of people who use public transportation to get to work?
+
+# Summary 
+
+In general, the Baltimore City neighborhoods that have the lowest percentage of people who use public transportation to get to work have some of the highest rates of car ownership. Usually between 3% - 11% of people do not own cars. 
+
+# Data Dictionary
+* community: Neighborhoods in Baltimore City (chr)
+* public_transport: Percent of people in the neighborhood who regularly use public transportation to get to work (dbl)
+* pct_wo_car: Percent of people in the neighborhood who do not have regular access/own a car
+
+
 #By Parker
 
 ```{r}
@@ -202,17 +221,24 @@ drive_to_work <- drive_to_work %>%
 
 low_public_high_drive <- min_public_transportation %>% 
   clean_names() %>% 
-  inner_join(drive_to_work, by="community") 
-
-names(low_public_high_drive)[names(low_public_high_drive) == "x2020_data.x"] <- "low_public_transport"
-names(low_public_high_drive)[names(low_public_high_drive) == "x2020_data.y"] <- "drive_to_work"
+  inner_join(drive_to_work, by="community") %>%
+  rename(pct_wo_car = x2020_data)
   
-
 low_public_high_drive
 
 ```
 
-# Do the neighborhoods that have lowest rates of people driving alone to work also have the highest rates of people who use public transportation to get to work?
+# Do the neighborhoods that have the highest rates of people who use public transportation to get to work also have the lowest rates of car ownership?
+
+# Summary 
+
+# In general, the Baltimore City neighborhoods that have the highest percentage of people who use public transportation to get to work also some of the lowest rates oof car ownership, usually between 40% - 50% of people do not own cars. 
+
+# Data Dictionary
+* community: Neighborhoods in Baltimore City (chr)
+* public_transport: Percent of people in the neighborhood who regularly use public transportation to get to work (dbl)
+* pct_wo_car: Percent of people in the neighborhood who do not have regular access/own a car
+
 #By Parker
 ```{r}
 no_car <- no_car %>%
@@ -220,19 +246,16 @@ no_car <- no_car %>%
 
 high_public_low_drive <- max_public_transportation %>% 
   clean_names() %>% 
-  inner_join(no_car, by="community") 
-
-names(high_public_low_drive)[names(high_public_low_drive) == "x2020_data.x"] <- "high_public_transport"
-names(high_public_low_drive)[names(high_public_low_drive) == "x2020_data.y"] <- "no_car"
+  inner_join(no_car, by="community") %>%
+  rename(pct_wo_car = x2020_data)
 
 high_public_low_drive
 ```
 
 
 # 250 words on newsworthy findings 
-The communities with the highest use of public transportation are majority Black and the communities with the lowest use of public transport are majority white. For example, of the five neighborhoods with the highest percentage of public transportation use, two are over 90% Black, one is over 80% Black and two are over 70% Black. Of the five #SPELLING# neighorhoods with the lowest percentage of public transportation use, one is over 80% white, two are over 70% white and two are over 60% white. #WELLS COMMENT: DO THESE NEIGHBORHOODS HAVE SUBWAY STOPS OR EASY ACCESS TO PUBLIC TRANSPORTATION INFRASTRUCTURE?## It is also notable that the neighborhoods with high percentage of public transportation use (which are also majority Black) have a median salary range of about #NEED DOLLAR SIGN!# 23,000 - 39,000 while the neighborhoods with low percentage of public transportation use (which are also majority white) have a median salary range of about #NEED DOLLAR SIGN!# 63,000 - 134,000. However, #NEED DOLLAR SIGN!# 63,000 is an outlier, and without that one neighborhood, the salary range is #NEED DOLLAR SIGN!# 97,000 - 134,000.
 
-It's also notable that there is only one Baltimore neighborhood in which less than 40% of people live in a household with no vehicle access. Lot's of people in Baltimore, despite the specific neighborhood they live in, do not have cars. 
+The communities with the highest use of public transportation are majority Black and the communities with the lowest use of public transport are majority white. For example, of the five neighborhoods with the highest percentage of public transportation use, two are over 90% Black, one is over 80% Black and two are over 70% Black. Of the five neighborhoods with the lowest percentage of public transportation use, one is over 80% white, two are over 70% white and two are over 60% white.  It is also notable that the neighborhoods with high percentage of public transportation use (which are also majority Black) have a median salary range of about $23,000 - $39,000 while the neighborhoods with low percentage of public transportation use (which are also majority white) have a median salary range of about $63,000 - $134,000. However, $63,000 is an outlier, and without that one neighborhood $97,000 - $134,000.
 
 
 #WELLS COMMENT: Now, let's produce a map and a few charts to illustrate these findings.
