@@ -254,13 +254,8 @@ high_public_low_drive
 
 
 # 250 words on newsworthy findings 
-<<<<<<< Updated upstream
-The communities with the highest use of public transportation are majority Black and the communities with the lowest use of public transport are majority white. For example, of the five neighborhoods with the highest percentage of public transportation use, two are over 90% Black, one is over 80% Black and two are over 70% Black. Of the five #SPELLING# neighorhoods with the lowest percentage of public transportation use, one is over 80% white, two are over 70% white and two are over 60% white. #WELLS COMMENT: DO THESE NEIGHBORHOODS HAVE SUBWAY STOPS OR EASY ACCESS TO PUBLIC TRANSPORTATION INFRASTRUCTURE?## It is also notable that the neighborhoods with high percentage of public transportation use (which are also majority Black) have a median salary range of about #NEED DOLLAR SIGN!# 23,000 - 39,000 while the neighborhoods with low percentage of public transportation use (which are also majority white) have a median salary range of about #NEED DOLLAR SIGN!# 63,000 - 134,000. However, #NEED DOLLAR SIGN!# 63,000 is an outlier, and without that one neighborhood, the salary range is #NEED DOLLAR SIGN!# 97,000 - 134,000.
 
-It's also notable that there is only one Baltimore neighborhood in which less than 40% of people live in a household with no vehicle access. Lot's of people in Baltimore, despite the specific neighborhood they live in, do not have cars. 
-=======
 The communities with the highest use of public transportation are majority Black and the communities with the lowest use of public transport are majority white. For example, of the five neighborhoods with the highest percentage of public transportation use, two are over 90% Black, one is over 80% Black and two are over 70% Black. Of the five neighborhoods with the lowest percentage of public transportation use, one is over 80% white, two are over 70% white and two are over 60% white.  It is also notable that the neighborhoods with high percentage of public transportation use (which are also majority Black) have a median salary range of about $23,000 - $39,000 while the neighborhoods with low percentage of public transportation use (which are also majority white) have a median salary range of about $63,000 - $134,000. However, $63,000 is an outlier, and without that one neighborhood $97,000 - $134,000.
->>>>>>> Stashed changes
 
 
 #WELLS COMMENT: Now, let's produce a map and a few charts to illustrate these findings.
