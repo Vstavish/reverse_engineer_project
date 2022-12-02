@@ -295,6 +295,7 @@ The communities with the highest use of public transportation are majority Black
 #WELLS COMMENT: Now, let's produce a map and a few charts to illustrate these findings.
 
 #Map on public transportation use
+#Note, I want to convert this to a leaflet, but I did a ton of research and it is slightly confusing on how to do that. For now, I was able to create this chloropleth map using ggplot.
 ```{r}
 baltimore_shape <- st_read("GitHub/reverse_engineer_project/csa_2010_boundaries (1)/CSA_NSA_Tracts.shp")
 
