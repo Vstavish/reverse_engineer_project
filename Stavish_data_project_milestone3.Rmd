@@ -304,23 +304,14 @@ geo_public_transportation <- baltimore_shape %>%
   st_as_sf() %>% 
   rename(public_transportation_pct = x2020_data)
 
-#ggplot() +
-  #geom_sf(data=geo_public_transportation, aes(fill=public_transportation_pct))
+ggplot() +
+  geom_sf(data=geo_public_transportation, aes(fill=public_transportation_pct)) +
+  scale_fill_gradient(low="grey",high="blue") +
+  labs(title = "Pct of People that Use Public Transportation in Balt Neighborhoods",
+    subtitle ="Citywide average: 17.4 percent",
+    caption = "BNIA Data 2020, Graphic by Parker Leipzig and Victoria Stavish",
+      )
 
-pal <- colorQuantile("YlGn", NULL, n = 5)
-
-state_popup <- paste0("<strong>Neighborhood: </strong>", 
-                      geo_public_transportation$community, 
-                      "<br><strong>Percent that Uses Public Transportation </strong>", 
-                      geo_public_transportation$public_transportation_pct)
-
-leaflet(data = geo_public_transportation) %>%
-  addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(fillColor = ~pal, 
-              fillOpacity = 0.8, 
-              color = "#BDBDC3", 
-              weight = 1, 
-              popup = state_popup)   
 ```
 # Map on amount of public transportation stops in each neighborhood
 ```{r}
