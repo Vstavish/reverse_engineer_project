@@ -131,6 +131,40 @@ min_transit_income
 
 ```
 
+# scatter plot showing correlation between income and public transportation use (This chart is whack right now because salaries are not numeric. Will fix.)
+
+```{r}
+
+# inner join neighborhoods that use public transportation the most with income data
+
+public_transportation <- public_transportation %>%
+  arrange(desc("2020 Data"))
+
+transportation_income_join <- public_transportation %>%
+  inner_join(median_income, by="Community") %>%
+  clean_names() %>%
+  rename(median_income = x2020_data_y) %>%
+  rename(public_transport = x2020_data_x) %>%
+  arrange(desc(public_transport))
+
+
+# scatterplots for the two graphs
+
+ggplot(transportation_income_join, aes(y=public_transport, x=median_income)) +
+geom_point() +
+theme(axis.text.x = element_text(angle = 90)) +
+  labs(
+    title="As public transportation use declines, salaries increase",
+    subtitle = "In Baltimore City neighborhoods, neighborhoods with high public transportation use make an median 
+income of $40,000 while the median income of neighborhoods with low public 
+transportation use is about $110,000.",
+    x = "Median income",
+    y = "Percent who use public transportation to get to work",
+    caption = "Source: BNIA  By: Victoria Stavish")
+
+```
+
+
 # What are the race demographics of the neighborhoods with the highest and lowest transportation use?
 
 # Summary 
@@ -260,9 +294,9 @@ The communities with the highest use of public transportation are majority Black
 
 #WELLS COMMENT: Now, let's produce a map and a few charts to illustrate these findings.
 
-#Map
+#Map on public transportation use
 ```{r}
-baltimore_shape <- st_read("/Users/parkerleipzig/Desktop/GitHub/reverse_engineer_project/csa_2010_boundaries (1)/CSA_NSA_Tracts.shp")
+baltimore_shape <- st_read("GitHub/reverse_engineer_project/csa_2010_boundaries (1)/CSA_NSA_Tracts.shp")
 
 geo_public_transportation <- baltimore_shape %>% 
   inner_join(public_transportation, by="Community") %>% 
@@ -288,3 +322,34 @@ leaflet(data = geo_public_transportation) %>%
               weight = 1, 
               popup = state_popup)   
 ```
+# Map on amount of public transportation stops in each neighborhood
+```{r}
+
+baltimore_stops <- st_read("GitHub/reverse_engineer_project/Baltimore_Regions_Public_Transit_(stops)//Baltimore_Regions_Public_Transit_(stops).shp")
+
+geo_stops <- baltimore_stops %>% 
+  inner_join(public_transportation, by="Community") %>% 
+  clean_names() %>% 
+  st_as_sf() %>% 
+  rename(public_transportation_pct = x2020_data)
+
+#ggplot() +
+  #geom_sf(data=geo_public_transportation, aes(fill=public_transportation_pct))
+
+pal <- colorQuantile("YlGn", NULL, n = 5)
+
+stops_popup <- paste0("<strong>Neighborhood: </strong>", 
+                      geo_stops$community, 
+                      "<br><strong>Percent that Uses Public Transportation </strong>", 
+                      geo_stops$public_transportation_pct)
+
+leaflet(data = geo_public_transportation) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fillColor = ~pal, 
+              fillOpacity = 0.8, 
+              color = "#BDBDC3", 
+              weight = 1, 
+              popup = state_popup)   
+
+```
+
