@@ -295,8 +295,8 @@ The communities with the highest use of public transportation are majority Black
 
 #WELLS COMMENT: Now, let's produce a map and a few charts to illustrate these findings.
 
-#Map on public transportation use
-#Note, I want to convert this to a leaflet, but I did a ton of research and it is slightly confusing on how to do that. For now, I was able to create this chloropleth map using ggplot.
+#Parker
+#ggplot map on public transportation use.
 ```{r}
 baltimore_shape <- st_read("/Users/parkerleipzig/Desktop/GitHub/reverse_engineer_project/csa_2010_boundaries (1)/CSA_NSA_Tracts.shp")
 
@@ -311,38 +311,35 @@ ggplot() +
   scale_fill_gradient(low="grey",high="blue") +
   labs(title = "Pct of People that Use Public Transportation in Balt Neighborhoods",
     subtitle ="Citywide average: 17.4 percent",
-    caption = "BNIA Data 2020, Graphic by Parker Leipzig and Victoria Stavish",
-      )
+    caption = "BNIA Data 2020, Graphic by Parker Leipzig",
+      ) 
 
 ```
-# Map on amount of public transportation stops in each neighborhood
+
+#Parker
+#Leaflet map on public transportation use
 ```{r}
+geo_public_transportation <- geo_public_transportation %>% 
+  sf::st_transform('+proj=lonlat +datum=WGS84')
 
-baltimore_stops <- st_read("GitHub/reverse_engineer_project/Baltimore_Regions_Public_Transit_(stops)//Baltimore_Regions_Public_Transit_(stops).shp")
+pal <- colorNumeric(
+  palette = "plasma",
+  domain = geo_public_transportation$public_transportation_pct
+)
 
-geo_stops <- baltimore_stops %>% 
-  inner_join(public_transportation, by="Community") %>% 
-  clean_names() %>% 
-  st_as_sf() %>% 
-  rename(public_transportation_pct = x2020_data)
-
-#ggplot() +
-  #geom_sf(data=geo_public_transportation, aes(fill=public_transportation_pct))
-
-pal <- colorQuantile("YlGn", NULL, n = 5)
-
-stops_popup <- paste0("<strong>Neighborhood: </strong>", 
-                      geo_stops$community, 
-                      "<br><strong>Percent that Uses Public Transportation </strong>", 
-                      geo_stops$public_transportation_pct)
-
-leaflet(data = geo_public_transportation) %>%
-  addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(fillColor = ~pal, 
-              fillOpacity = 0.8, 
-              color = "#BDBDC3", 
-              weight = 1, 
-              popup = state_popup)   
-
+leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(data=geo_public_transportation, 
+              color = ~pal(public_transportation_pct),
+              weight= 2.5, 
+              smoothFactor = 0.2,
+              fillOpacity = 0.5,
+              label = paste("Public Transportation Percent is:",(scales::number(geo_public_transportation$public_transportation_pct)), "for",geo_public_transportation$community)) %>% 
+  addLegend(
+    position = "bottomright",
+    pal = pal,
+    values = geo_public_transportation$public_transportation_pct,
+    title = "Public Transportation Percentage<br>Per Neighborhood in 2020"
+  )
 ```
 
