@@ -141,10 +141,10 @@ public_transportation <- public_transportation %>%
   arrange(desc("2020 Data"))
 
 transportation_income_join <- public_transportation %>%
-  inner_join(median_income, by="Community") %>%
   clean_names() %>%
-  rename(median_income = x2020_data_y) %>%
-  rename(public_transport = x2020_data_x) %>%
+  inner_join(median_income, by="community") %>%
+  rename(median_income = x2020_data.y) %>%
+  rename(public_transport = x2020_data.x) %>%
   arrange(desc(public_transport))
 
 
@@ -297,7 +297,7 @@ The communities with the highest use of public transportation are majority Black
 #Map on public transportation use
 #Note, I want to convert this to a leaflet, but I did a ton of research and it is slightly confusing on how to do that. For now, I was able to create this chloropleth map using ggplot.
 ```{r}
-baltimore_shape <- st_read("GitHub/reverse_engineer_project/csa_2010_boundaries (1)/CSA_NSA_Tracts.shp")
+baltimore_shape <- st_read("/Users/parkerleipzig/Desktop/GitHub/reverse_engineer_project/csa_2010_boundaries (1)/CSA_NSA_Tracts.shp")
 
 geo_public_transportation <- baltimore_shape %>% 
   inner_join(public_transportation, by="Community") %>% 
