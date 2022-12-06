@@ -93,8 +93,8 @@ pop_asian <- read_excel("population_black/population_asian.xlsx")
 
 max_public_transportation <- public_transportation %>%
   clean_names() %>%
-  rename(public_transport = x2020_data) %>%
-  slice_max(public_transport, n=5)
+  rename(public_trans = "x2020_data") %>%
+  slice_max(public_trans, n=5)
 
 # 5 Baltimore neighborhoods that use public transportation the least to get to work 
 
