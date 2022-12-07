@@ -138,25 +138,15 @@ min_transit_income
 
 # inner join neighborhoods that use public transportation the most with income data
 
-median_income1 <- median_income %>%
-  as.data.frame() %>%
-  clean_names() 
-
-median_income1$x2020_data <- as.numeric(gsub(",","",median_income1$x2020_data))
-
 public_transportation <- public_transportation %>%
   arrange(desc("2020 Data"))
 
 transportation_income_join <- public_transportation %>%
   clean_names() %>%
-  inner_join(median_income1, by="community") %>%
+  inner_join(median_income, by="community") %>%
   rename(median_income = x2020_data.y) %>%
   rename(public_transport = x2020_data.x) %>%
   arrange(desc(public_transport))
-
-
-transportation_income_join$median_income <-  as.numeric(transportation_income_join$median_income)
-  
 
 
 # scatterplots for the two graphs
@@ -344,7 +334,7 @@ leaflet() %>%
               weight= 2.5, 
               smoothFactor = 0.2,
               fillOpacity = 0.5,
-              label = paste("Public Transportation Percent is:",(scales::number(geo_public_transportation$public_transportation_pct)), "for",geo_public_transportation$community)) %>% 
+              label = paste("Percent of that uses public transportation is:",(scales::number(geo_public_transportation$public_transportation_pct)), "for",geo_public_transportation$community)) %>% 
   addLegend(
     position = "bottomright",
     pal = pal,
