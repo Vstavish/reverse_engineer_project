@@ -138,6 +138,14 @@ min_transit_income
 
 # inner join neighborhoods that use public transportation the most with income data
 
+median_income <- median_income %>%
+  as.data.frame() %>%
+  clean_names()
+
+median_income <- as.numeric(unlist(median_income$x2020_data))
+         
+
+
 public_transportation <- public_transportation %>%
   arrange(desc("2020 Data"))
 
