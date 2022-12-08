@@ -293,8 +293,6 @@ high_public_low_drive
 The communities with the highest use of public transportation are majority Black and the communities with the lowest use of public transport are majority white. For example, of the five neighborhoods with the highest percentage of public transportation use, two are over 90% Black, one is over 80% Black and two are over 70% Black. Of the five neighborhoods with the lowest percentage of public transportation use, one is over 80% white, two are over 70% white and two are over 60% white.  It is also notable that the neighborhoods with high percentage of public transportation use (which are also majority Black) have a median salary range of about $23,000 - $39,000 while the neighborhoods with low percentage of public transportation use (which are also majority white) have a median salary range of about $63,000 - $134,000. However, $63,000 is an outlier, and without that one neighborhood $97,000 - $134,000.
 
 
-#WELLS COMMENT: Now, let's produce a map and a few charts to illustrate these findings.
-
 #Parker
 #ggplot map on public transportation use.
 ```{r}
@@ -318,6 +316,7 @@ ggplot() +
 
 #Parker
 #Leaflet map on public transportation use
+#This map indicates that Greater Rosemont, Southwest Baltimore and Sandtown-Wicnhester are the top three neighborhoods in the city that use public transportation the most. It also shows how these neighborhoods are clustered in the historic "Black Butterfly" area of Baltimore.
 ```{r}
 geo_public_transportation <- geo_public_transportation %>% 
   sf::st_transform('+proj=lonlat +datum=WGS84')
@@ -334,12 +333,12 @@ leaflet() %>%
               weight= 2.5, 
               smoothFactor = 0.2,
               fillOpacity = 0.5,
-              label = paste("Percent of that uses public transportation is:",(scales::number(geo_public_transportation$public_transportation_pct)), "for",geo_public_transportation$community)) %>% 
+              label = paste("Percent that uses public transportation is:",(scales::number(geo_public_transportation$public_transportation_pct)), "for",geo_public_transportation$community)) %>% 
   addLegend(
     position = "bottomright",
     pal = pal,
     values = geo_public_transportation$public_transportation_pct,
-    title = "Public Transportation Percentage<br>Per Neighborhood in 2020"
+    title = "Public Transportation<br>Pct 2020"
   )
 ```
 
